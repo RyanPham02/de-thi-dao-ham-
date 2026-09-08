@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Đạo hàm hàm ẩn</title>
+    <!-- MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #f4f7fc;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .app-container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            padding: 28px 30px;
+            transition: 0.2s;
+        }
+        h1 {
+            font-size: 26px;
+            font-weight: 600;
+            color: #0b1a33;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 4px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #eef2f7;
+            padding-bottom: 18px;
+        }
+        h1 small {
+            font-size: 16px;
+            font-weight: 400;
+            color: #3a5670;
+            margin-left: auto;
+            background: #eef4fa;
+            padding: 6px 16px;
+            border-radius: 40px;
+        }
+        .question-panel {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 6px 4px 6px 4px;
+        }
+        .question-item {
+            background: #f9faff;
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 12px rgba(0, 20, 40, 0.02);
+            border: 1px solid #eef2f8;
+            transition: 0.15s;
+        }
+        .question-item:hover {
+            border-color: #d0ddea;
+        }
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+        .q-number {
+            font-weight: 600;
+            color: #1f3a5f;
+            background: #e4ebf5;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+        .q-tag {
+            font-size: 13px;
+            font-weight: 500;
+            background: #dce5f0;
+            color: #1f3a5f;
+            padding: 2px 16px;
+            border-radius: 30px;
+        }
+        .q-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: #0b1f33;
+            margin: 12px 0 16px 0;
+            line-height: 1.5;
+            padding: 6px 2px;
+        }
+        .q-text .math {
+            font-weight: 500;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option-btn {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: white;
+            border: 1.5px solid #dbe2ed;
+            border-radius: 60px;
+            padding: 14px 22px;
+            font-size: 16px;
+            font-weight: 450;
+            color: #1a2e47;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .option-btn:hover:not(.disabled-opt) {
+            background: #f2f6fe;
+            border-color: #8ca3c9;
+            transform: scale(1.005);
+        }
+        .option-btn .label {
+            font-weight: 600;
+            color: #3a5a7a;
+            min-width: 28px;
+        }
+        .option-btn .content {
+            flex: 1;
+        }
+        .option-btn.correct {
+            background: #d4edda;
+            border-color: #2b8c4a;
+            box-shadow: 0 0 0 2px #a3d8b3;
+        }
+        .option-btn.correct .label {
+            color: #1a6e34;
+        }
+        .option-btn.wrong {
+            background: #f8dddd;
+            border-color: #b33c3c;
+            box-shadow: 0 0 0 2px #f0baba;
+        }
+        .option-btn.wrong .label {
+            color: #a12b2b;
+        }
+        .option-btn.disabled-opt {
+            cursor: default;
+            opacity: 0.9;
+        }
+        .option-btn.correct.disabled-opt {
+            opacity: 1;
+        }
+        .feedback {
+            margin-top: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            padding-left: 8px;
+            color: #1f3a5f;
+        }
+        .score-area {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            margin-top: 16px;
+            padding: 12px 8px 0 8px;
+            border-top: 1px solid #e0e8f2;
+        }
+        .score-badge {
+            background: #1e3a5f;
+            color: white;
+            padding: 8px 26px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: 0.3px;
+        }
+        .reset-btn {
+            background: #eef3fa;
+            border: none;
+            border-radius: 60px;
+            padding: 10px 28px;
+            font-weight: 600;
+            color: #1f3a5f;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #d0ddea;
+        }
+        .reset-btn:hover {
+            background: #dfe8f3;
+            border-color: #b0c4dd;
+        }
+        @media (max-width: 600px) {
+            .app-container { padding: 16px; }
+            .question-item { padding: 16px; }
+            .option-btn { padding: 12px 16px; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container" id="app">
+    <h1>
+        📐 Đạo hàm hàm ẩn
+        <small>20 câu · 4 lựa chọn</small>
+    </h1>
+    <div id="questionList" class="question-panel"></div>
+    <div class="score-area">
+        <div class="score-badge" id="scoreDisplay">0 / 20</div>
+        <button class="reset-btn" id="resetBtn">⟳ Làm lại</button>
+    </div>
+</div>
+<script>
+    (function() {
+        // ----- 20 câu hỏi trắc nghiệm (mỗi câu 4 lựa chọn, đáp án index 0->3) -----
+        // Chủ đề: Đạo hàm hàm ẩn. 
+        // 5 lý thuyết, 5 dễ, 5 trung bình, 5 khó (đánh dấu tag)
+        const questions = [
+            // === 5 LÝ THUYẾT (tag: Lý thuyết) ===
+            { 
+                tag: 'Lý thuyết', 
+                text: 'Cho hàm ẩn \( y = y(x) \) xác định bởi \( x^2 + y^2 = 1 \). Đạo hàm \( y\' \) bằng:', 
+                options: ['\(-\\frac{x}{y}\)', '\(\\frac{x}{y}\)', '\(-\\frac{y}{x}\)', '\(\\frac{y}{x}\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Lý thuyết', 
+                text: 'Đạo hàm của hàm ẩn \( y \) theo \( x \) từ phương trình \( e^{xy} = x+y \) được tính bằng công thức nào?', 
+                options: ['\(y\' = \\frac{1 - y e^{xy}}{x e^{xy} - 1}\)', '\(y\' = \\frac{1 + y e^{xy}}{x e^{xy} + 1}\)', '\(y\' = \\frac{e^{xy} - y}{x e^{xy} + 1}\)', '\(y\' = \\frac{e^{xy} + y}{x e^{xy} - 1}\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Lý thuyết', 
+                text: 'Phương pháp đạo hàm hàm ẩn sử dụng quy tắc nào để tìm \( y\' \) khi \( F(x,y)=0 \)?', 
+                options: ['Đạo hàm hai vế theo \( x \), coi \( y \) là hàm của \( x \)', 'Đạo hàm riêng theo \( y \)', 'Chia cả hai vế cho \( y \)', 'Lấy vi phân toàn phần'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Lý thuyết', 
+                text: 'Cho \( x^3 + y^3 = 3xy \). Đạo hàm \( y\' \) tại điểm \( (1,1) \) có giá trị?', 
+                options: ['\(-1\)', '\(1\)', '\(0\)', 'Không xác định'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Lý thuyết', 
+                text: 'Hàm ẩn \( y = y(x) \) từ \( \\sin(x+y) = y \\cos x \\). Khi đó \( y\' \) được xác định bởi:', 
+                options: ['\(y\' = \\frac{\\cos(x+y) + y \\sin x}{\\cos(x+y) - \\cos x}\)', '\(y\' = \\frac{\\cos(x+y) - y \\sin x}{\\cos(x+y) + \\cos x}\)', '\(y\' = \\frac{\\sin(x+y) + y \\cos x}{\\sin(x+y) - \\cos x}\)', '\(y\' = \\frac{\\sin(x+y) - y \\cos x}{\\sin(x+y) + \\cos x}\)'], 
+                answer: 0 
+            },
+            // === 5 BÀI TẬP DỄ (tag: Dễ) ===
+            { 
+                tag: 'Dễ', 
+                text: 'Cho \( x^2 + y^2 = 25 \\). Tìm \( y\' \) tại điểm \( (3,4) \).', 
+                options: ['\(-\\frac{3}{4}\)', '\(\\frac{3}{4}\)', '\(-\\frac{4}{3}\)', '\(\\frac{4}{3}\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Dễ', 
+                text: 'Cho \( y^2 = 4x \\). Đạo hàm \( y\' \) bằng:', 
+                options: ['\(\\frac{2}{y}\)', '\(\\frac{1}{y}\)', '\(\\frac{4}{y}\)', '\(\\frac{2x}{y}\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Dễ', 
+                text: 'Từ \( xy = 1 \\), đạo hàm \( y\' \) là:', 
+                options: ['\(-\\frac{1}{x^2}\)', '\(\\frac{1}{x^2}\)', '\(-\\frac{1}{y^2}\)', '\(\\frac{1}{y^2}\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Dễ', 
+                text: 'Cho \( x + y = \\sin(xy) \\). Đạo hàm \( y\' \) tại \( (0,0) \) bằng?', 
+                options: ['\(-1\)', '\(1\)', '\(0\)', 'Không xác định'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Dễ', 
+                text: 'Cho \( x^2 - y^2 = 1 \\), đạo hàm \( y\' \) là:', 
+                options: ['\(\\frac{x}{y}\)', '\(-\\frac{x}{y}\)', '\(\\frac{y}{x}\)', '\(-\\frac{y}{x}\)'], 
+                answer: 0 
+            },
+            // === 5 BÀI TẬP TRUNG BÌNH (tag: Trung bình) ===
+            { 
+                tag: 'Trung bình', 
+                text: 'Cho \( \\ln(x^2 + y^2) = 2 \\arctan(\\frac{y}{x}) \\). Đạo hàm \( y\' \) bằng:', 
+                options: ['\(\\frac{x+y}{x-y}\)', '\(\\frac{x-y}{x+y}\)', '\(-\\frac{x+y}{x-y}\)', '\(\\frac{y-x}{x+y}\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Trung bình', 
+                text: 'Cho \( e^{x+y} = x^2 y + 1 \\). Tìm \( y\' \) tại \( (0,0) \).', 
+                options: ['\(-1\)', '\(1\)', '\(0\)', '\(2\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Trung bình', 
+                text: 'Hàm ẩn \( y = y(x) \) xác định bởi \( x^3 + y^3 - 3xy = 0 \\). Tìm \( y\' \) tại \( x=1, y=1 \).', 
+                options: ['\(-1\)', '\(1\)', '\(0\)', '\(-2\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Trung bình', 
+                text: 'Cho \( \\sqrt{x^2 + y^2} = e^{y/x} \\). Đạo hàm \( y\' \) là:', 
+                options: ['\(\\frac{x y - (x^2+y^2)}{x^2 + x y - (x^2+y^2)}\)', '\(\\frac{x y + (x^2+y^2)}{x^2 - x y + (x^2+y^2)}\)', '\(\\frac{x y}{x^2+y^2}\)', '\(\\frac{x^2+y^2}{xy}\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Trung bình', 
+                text: 'Cho \( \\sin(x+y) = \\ln(x+y) \\). Tìm \( y\' \) (với \( x+y>0 \)).', 
+                options: ['\(-1 + \\frac{1}{\\cos(x+y) - 1}\)', '\(-1 - \\frac{1}{\\cos(x+y) - 1}\)', '\(\\frac{1}{\\cos(x+y)-1}\)', '\(-\\frac{1}{\\cos(x+y)+1}\)'], 
+                answer: 0 
+            },
+            // === 5 BÀI TẬP KHÓ (tag: Khó) ===
+            { 
+                tag: 'Khó', 
+                text: 'Cho \( \\arctan(\\frac{y}{x}) = \\ln \\sqrt{x^2+y^2} \\). Đạo hàm \( y\' \) là:', 
+                options: ['\(\\frac{x+y}{x-y}\)', '\(\\frac{x-y}{x+y}\)', '\(-\\frac{x+y}{x-y}\)', '\(\\frac{x+2y}{x-y}\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Khó', 
+                text: 'Cho \( x^y = y^x \\). Đạo hàm \( y\' \) tại điểm \( (2,4) \) có giá trị:', 
+                options: ['\(\\frac{1 - \\ln 2}{\\ln 2 - 1}\)', '\(\\frac{1 + \\ln 2}{\\ln 2 - 1}\)', '\(\\frac{1 - \\ln 2}{1 + \\ln 2}\)', '\(\\frac{\\ln 2 - 1}{1 - \\ln 2}\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Khó', 
+                text: 'Cho \( \\cos(x+y) = x^2 y \\). Tính \( y\' \) tại \( (0, \\pi/2) \).', 
+                options: ['\(-1\)', '\(1\)', '\(0\)', '\(\\pi\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Khó', 
+                text: 'Cho \( \\ln(xy) = x + y \\). Tìm \( y\' \).', 
+                options: ['\(\\frac{y(x-1)}{x(1-y)}\)', '\(\\frac{y(x+1)}{x(1+y)}\)', '\(\\frac{x(y-1)}{y(1-x)}\)', '\(-\\frac{y(x-1)}{x(1-y)}\)'], 
+                answer: 0 
+            },
+            { 
+                tag: 'Khó', 
+                text: 'Cho \( \\sqrt{x} + \\sqrt{y} = 1 \\). Đạo hàm \( y\' \) tại \( x=1/4, y=1/4 \) là:', 
+                options: ['\(-1\)', '\(1\)', '\(-\\frac{1}{2}\)', '\(\\frac{1}{2}\)'], 
+                answer: 0 
+            }
+        ];
+
+        // Mỗi câu có 4 lựa chọn, đáp án đúng được lưu ở index answer (0->3)
+        // trạng thái: đã chọn hay chưa, lưu selectedOption (null hoặc 0-3)
+        let state = questions.map(() => ({ selected: null }));
+
+        const questionListEl = document.getElementById('questionList');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+
+        // render toàn bộ
+        function render() {
+            let html = '';
+            for (let i = 0; i < questions.length; i++) {
+                const q = questions[i];
+                const sel = state[i].selected;
+                const isAnswered = (sel !== null);
+                const correctIndex = q.answer;
+
+                html += `<div class="question-item" data-qindex="${i}">`;
+                html += `<div class="q-header"><span class="q-number">Câu ${i+1}</span><span class="q-tag">${q.tag}</span></div>`;
+                html += `<div class="q-text">${q.text}</div>`;
+                html += `<div class="options">`;
+
+                // Duyệt 4 đáp án
+                for (let optIdx = 0; optIdx < 4; optIdx++) {
+                    let btnClass = 'option-btn';
+                    let disabledClass = '';
+                    if (isAnswered) {
+                        btnClass += ' disabled-opt';
+                        if (optIdx === correctIndex) {
+                            btnClass += ' correct';
+                        } else if (optIdx === sel && optIdx !== correctIndex) {
+                            btnClass += ' wrong';
+                        }
+                    }
+                    // label A, B, C, D
+                    const label = String.fromCharCode(65 + optIdx);
+                    html += `<div class="${btnClass}" data-q="${i}" data-opt="${optIdx}">
+                                <span class="label">${label}.</span>
+                                <span class="content">${q.options[optIdx]}</span>
+                             </div>`;
+                }
+                html += `</div>`; // end options
+                if (isAnswered) {
+                    const isCorrect = (sel === correctIndex);
+                    html += `<div class="feedback">${isCorrect ? '✅ Đúng' : '❌ Sai'}</div>`;
+                } else {
+                    html += `<div class="feedback" style="color:#6f8aa8;">🔘 Chọn đáp án</div>`;
+                }
+                html += `</div>`; // end question-item
+            }
+            questionListEl.innerHTML = html;
+
+            // cập nhật điểm
+            let correctCount = 0;
+            for (let i = 0; i < state.length; i++) {
+                if (state[i].selected !== null && state[i].selected === questions[i].answer) {
+                    correctCount++;
+                }
+            }
+            scoreDisplay.textContent = `${correctCount} / ${questions.length}`;
+
+            // Gắn sự kiện click cho từng option (chỉ khi chưa được chọn)
+            document.querySelectorAll('.option-btn:not(.disabled-opt)').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const qIndex = parseInt(this.dataset.q);
+                    const optIndex = parseInt(this.dataset.opt);
+                    // nếu đã trả lời rồi thì bỏ qua
+                    if (state[qIndex].selected !== null) return;
+                    // lưu lựa chọn
+                    state[qIndex].selected = optIndex;
+                    render(); // re-render toàn bộ
+                    // sau khi render, MathJax có thể cần update
+                    if (window.MathJax && MathJax.typesetPromise) {
+                        MathJax.typesetPromise().catch(() => {});
+                    }
+                });
+            });
+        }
+
+        // reset
+        function resetAll() {
+            state = questions.map(() => ({ selected: null }));
+            render();
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise().catch(() => {});
+            }
+        }
+
+        // lần đầu render
+        render();
+        // MathJax render lại sau khi DOM có nội dung
+        if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise().catch(() => {});
+        }
+
+        // nút reset
+        document.getElementById('resetBtn').addEventListener('click', resetAll);
+
+        // Hỗ trợ MathJax khi có thay đổi (sau render)
+        // Lắng nghe sự kiện click, nhưng render đã gọi typeset
+        // dùng MutationObserver nếu cần, nhưng đơn giản gọi sau render.
+        // Thêm observer nhẹ cho các phần tử mới
+        const observer = new MutationObserver(() => {
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise().catch(() => {});
+            }
+        });
+        observer.observe(questionListEl, { childList: true, subtree: true });
+        // cũng gọi sau reset
+        window.addEventListener('load', function() {
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise().catch(() => {});
+            }
+        });
+    })();
+</script>
+</body>
+</html>
